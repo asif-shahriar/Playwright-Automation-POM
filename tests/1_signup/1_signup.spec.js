@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker';
 import fs from 'fs';
 import { signUpLocators } from '../../locators/signUpLocators.js';
 import { loginLocators } from '../../locators/loginLocators.js';
+import { writeJson, readJson } from '../../utilities/jsonActions.js'
 
 
 test.beforeEach(async ({ page }) => {
@@ -29,10 +30,10 @@ test('Sign up and login with that user [no-setup]', async ({ page }) => {
     expect(modalText).toBe('Sign up')
 
     const username = faker.internet.username()
-    const password = faker.internet.password()
+    const pass = faker.internet.password()
 
     await page.fill(signUpLocators.username, username)
-    await page.fill(signUpLocators.password, password)
+    await page.fill(signUpLocators.password, pass)
 
     // Set up dialog/alert handler BEFORE the click
     const alertPromise = new Promise(resolve => {
@@ -41,9 +42,12 @@ test('Sign up and login with that user [no-setup]', async ({ page }) => {
             expect(dialogText).toBe('Sign up successful.');
             await dialog.accept();
 
-            // loading the fake username and password on userinfo.json file
-            fs.writeFileSync('data/signupinfo.json', JSON.stringify({ username, password }, null, 2));
-            console.log('Credentials saved to userinfo.json');
+            /* 
+            loading the fake username and password on userinfo.json file 
+            if the key matches the variable, you don't need to pass it along with the key.
+            Here, variable name "pass" is not same as key, so you have to pass it along with the key
+            */
+            writeJson('data/signupinfo.json', { username, password: pass })
 
             resolve(); // Notify that dialog is handled
         });
@@ -53,11 +57,11 @@ test('Sign up and login with that user [no-setup]', async ({ page }) => {
     await page.click(signUpLocators.submitRegisterBtn)
 
     await alertPromise;
-    console.log(`Signup successful with username: '${username}' and password: '${password}'`)
+    console.log(`Signup successful with username: '${username}' and password: '${pass}'`)
 
 
     // Load saved username and password from userinfo.json 
-    const { username: userid, password: pw } = JSON.parse(fs.readFileSync('data/signupinfo.json', 'utf-8'));
+    const { username: userid, password: pw } = readJson('data/signupinfo.json', 'username', 'password')
 
     console.log(`extracted username: '${userid}' and password: '${pw}'`)
 
