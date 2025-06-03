@@ -1,5 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 import fs from 'fs';
+import { signUpLocators } from '../locators/signUpLocators.js';
+import { loginLocators } from '../locators/loginLocators.js';
 
 export const test = base.extend({
 
@@ -22,8 +24,11 @@ export const test = base.extend({
     }
 
     try {
-      await page.goto('https://demoblaze.com', { waitUntil: 'load' });
-      await page.waitForSelector('#nava');
+      // Load saved url from baseurl.json 
+      const { url } = JSON.parse(fs.readFileSync('data/baseurl.json', 'utf-8'));
+
+      await page.goto(url, { waitUntil: 'load' }); // waits for full page load
+      await page.waitForSelector(signUpLocators.pageLogo);
       await expect(page).toHaveTitle('STORE');
       console.log('Page loaded and title verified');
     } catch (error) {
@@ -33,20 +38,25 @@ export const test = base.extend({
 
     // Load credentials from logininfo.json
     const { username: userid, password: pw } = JSON.parse(
-      fs.readFileSync('Data/logininfo.json', 'utf-8')
+      fs.readFileSync('data/logininfo.json', 'utf-8')
     );
+  
 
-    await page.click('#login2');
-    await expect(page.locator('#logInModal')).toBeVisible();
+    await page.click(loginLocators.btnLogin);
+    await expect(page.locator(loginLocators.loginModalTitle)).toBeVisible();
 
-    await page.fill('#loginusername', userid);
-    await page.fill('#loginpassword', pw);
-    await page.click("button[onclick='logIn()']");
+    await page.fill(loginLocators.username, userid);
+    await page.fill(loginLocators.password, pw);
 
-    await expect(page.locator('#nameofuser')).toContainText(`Welcome ${userid}`);
-    console.log(`Login successful with username: '${userid}' and password: '${pw}'`);
+    await page.click(loginLocators.btnSubmitLogin);
+
+    // Assert that login was successful
+    await expect(page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${userid}`)
+    console.log(`Login successful with username: '${userid}' and password: '${pw}'`)
 
     // Important: this lets the test actually run after this code
     await use(page);
+
+    console.log('To check if github action executes this line when a new PR is generated')
   }
 });

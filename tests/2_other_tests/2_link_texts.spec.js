@@ -1,4 +1,4 @@
-import { test } from '../global_setup/test_setup.js';
+import { test } from '../../global_setup/test_setup.js';
 
 test('Print all unique link texts', async ({ page }) => {
     const allTexts = await page.locator('a').allTextContents()
