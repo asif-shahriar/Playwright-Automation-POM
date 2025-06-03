@@ -56,7 +56,7 @@ export const test = base.extend({
 
     // Important: this lets the test actually run after this code
     await use(page);
-
-    console.log('To check if github action executes this line when a new PR is generated')
+    
+    console.log('-----To check if github action executes this line when a new PR is generated-----')
   }
 });
