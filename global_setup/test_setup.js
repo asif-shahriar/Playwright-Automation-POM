@@ -1,7 +1,6 @@
 import { test as base, expect } from '@playwright/test';
-import fs from 'fs';
-import { signUpLocators } from '../locators/signUpLocators.js';
-import { loginLocators } from '../locators/loginLocators.js';
+import { Login } from '../pages/login.js'
+import { HomePage } from '../pages/homePage.js'
 
 export const test = base.extend({
 
@@ -18,41 +17,18 @@ export const test = base.extend({
     if (testInfo.title.includes('[no-setup]')) {
       console.log('Skipping global setup for:', testInfo.title);
 
-      /* so the test can use the page as usual 
-      as one file can contain multiple tests and all tests might not be skipped */
+      /* 
+        so the test can use the page as usual 
+        as one file can contain multiple tests and all tests might not be skipped 
+      */
       return await use(page);
     }
 
-    try {
-      // Load saved url from baseurl.json 
-      const { url } = JSON.parse(fs.readFileSync('data/baseurl.json', 'utf-8'));
+    const homePage = new HomePage(page)
+    await homePage.loadUrlFromGlobalJson('data/baseurl.json')
 
-      await page.goto(url, { waitUntil: 'load' }); // waits for full page load
-      await page.waitForSelector(signUpLocators.pageLogo);
-      await expect.soft(page).toHaveTitle('STORE') // soft assert
-      console.log('Page loaded and title verified');
-    } catch (error) {
-      console.error('Failed to load the page or match title:', error);
-      throw error;
-    }
-
-    // Load credentials from logininfo.json
-    const { username: userid, password: pw } = JSON.parse(
-      fs.readFileSync('data/logininfo.json', 'utf-8')
-    );
-  
-
-    await page.click(loginLocators.btnLogin);
-    await expect(page.locator(loginLocators.loginModalTitle)).toBeVisible();
-
-    await page.fill(loginLocators.username, userid);
-    await page.fill(loginLocators.password, pw);
-
-    await page.click(loginLocators.btnSubmitLogin);
-
-    // Assert that login was successful
-    await expect(page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${userid}`)
-    console.log(`Login successful with username: '${userid}' and password: '${pw}'`)
+    const loginPage = new Login(page)
+    await loginPage.loginFromJson('data/logininfo.json', 'username', 'password')
 
     // Important: this lets the test actually run after this code
     await use(page);
