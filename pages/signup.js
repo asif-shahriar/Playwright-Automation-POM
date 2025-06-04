@@ -15,7 +15,7 @@ export class SignUp {
         this.page = page;
     }
 
-    async signUpwithFakeData(filePath) {
+    async signUpWithFakeUserData(filePath) {
         await this.page.click(signUpLocators.signUpButton)
 
         const modalText = await this.page.textContent(signUpLocators.signUpModalTitle)

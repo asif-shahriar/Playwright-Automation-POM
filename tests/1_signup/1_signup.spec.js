@@ -13,6 +13,6 @@ test.beforeEach(async ({ page }) => {
 test('Sign up and login with that user [no-setup]', async ({ page }) => {
     const signupPage = new SignUp(page)
     const loginPage = new Login(page)
-    await signupPage.signUpwithFakeData('data/signupinfo.json')
+    await signupPage.signUpWithFakeUserData('data/signupinfo.json')
     await loginPage.loginFromJson('data/signupinfo.json', 'username', 'password')
 })
