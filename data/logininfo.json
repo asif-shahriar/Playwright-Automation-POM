@@ -1,5 +1,5 @@
 {
-  "_comment": "This credential is used to login and run all tests",
-  "username": "Cora.Rowe",
-  "password": "FM147s8QYdG6t80"
+  "comment": "This credential is used to login and run all tests",
+  "username": "playwright.user",
+  "password": "playwright"
 }

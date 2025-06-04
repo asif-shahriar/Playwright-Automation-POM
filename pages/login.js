@@ -26,7 +26,7 @@ export class Login {
     const userid = data[usernameKey]
     const pw = data[passwordKey]
 
-    console.log(`extracted username: '${userid}' and password: '${pw}'`)
+    // console.log(`extracted username: '${userid}' and password: '${pw}'`)
 
     await this.page.waitForSelector(loginLocators.btnLogin)
     await this.page.click(loginLocators.btnLogin)
@@ -39,7 +39,7 @@ export class Login {
 
     // Assert that login was successful
     await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${userid}`)
-    console.log(`Login successful with username: '${userid}' and password: '${pw}'`)
+    console.log(`Login successful with username: '${userid}'`)
 
   }
 
@@ -55,6 +55,6 @@ export class Login {
 
     // Assert that login was successful
     await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${username}`)
-    console.log(`Login successful with username: '${username}' and password: '${password}'`)
+    console.log(`Login successful with username: '${username}'`)
   }
 }
