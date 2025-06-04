@@ -50,7 +50,7 @@ export class SignUp {
         await this.page.click(signUpLocators.submitRegisterBtn)
 
         await alertPromise;
-        console.log(`Signup successful with username: '${username}' and password: '${pass}'`)
+        console.log(`Signup successful with username: '${username}'`)
 
     }
 
@@ -77,7 +77,7 @@ export class SignUp {
         await this.page.click(signUpLocators.submitRegisterBtn)
 
         await alertPromise;
-        console.log(`Signup successful with username: '${username}' and password: '${password}'`)
+        console.log(`Signup successful with username: '${username}'`)
 
     }
 }
