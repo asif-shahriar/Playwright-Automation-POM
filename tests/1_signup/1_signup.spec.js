@@ -9,10 +9,11 @@ test.beforeEach(async ({ page }) => {
     await homePage.loadUrlFromGlobalJson('data/baseurl.json')
 });
 
-
-test('Sign up and login with that user [no-setup]', async ({ page }) => {
-    const signupPage = new SignUp(page)
-    const loginPage = new Login(page)
-    await signupPage.signUpWithFakeUserData('data/signupinfo.json')
-    await loginPage.loginFromJson('data/signupinfo.json', 'username', 'password')
+test.describe('Sign up', () => {
+    test('[smoke] Sign up and login with that user [no-setup]', async ({ page }) => {
+        const signupPage = new SignUp(page)
+        const loginPage = new Login(page)
+        await signupPage.signUpWithFakeUserData('data/signupinfo.json')
+        await loginPage.loginFromJson('data/signupinfo.json', 'username', 'password')
+    })
 })

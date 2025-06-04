@@ -42,7 +42,7 @@ export class SignUp {
                 */
                 writeJson(filePath, { username, password: pass })
 
-                resolve(); // Notify that dialog is handled
+                resolve('Sign up alert is closed'); // Notify that dialog is handled
             });
         });
 
