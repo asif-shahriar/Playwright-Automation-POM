@@ -3,24 +3,30 @@ import fs from 'fs';
 /**
  * Reads and extracts specific keys from a JSON file.
  * @param {string} filePath - Relative path to the JSON file
- * @param {...string} keys - Keys to extract (optional). Returns full object if none provided.
+ * @param {...string} keys - Keys to extract (optional). Returns full object if none provided. Can provide any number of keys
  * @returns {Object} - Extracted key-value pairs or entire JSON object
  */
 export function readJson(filePath, ...keys) {
-  const fileData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  try {
+    const fileData = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
 
-  if (keys.length === 0) return fileData;
+    if (keys.length === 0) return fileData
 
-  const result = {};
-  for (const key of keys) {
-    if (key in fileData) {
-      result[key] = fileData[key];
-    } else {
-      console.warn(`Key "${key}" not found in ${filePath}`);
+    const result = {}
+    for (const key of keys) {
+      if (key in fileData) {
+        result[key] = fileData[key]
+      } else {
+        console.warn(`Key "${key}" not found in ${filePath}`)
+      }
     }
-  }
 
-  return result;
+    return result
+
+  } catch (error) {
+    console.error(`Error reading/parsing ${filePath}:`, error.message)
+    throw error
+  }
 }
 
 /**

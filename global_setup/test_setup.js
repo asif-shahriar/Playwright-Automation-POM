@@ -29,7 +29,7 @@ export const test = base.extend({
 
       await page.goto(url, { waitUntil: 'load' }); // waits for full page load
       await page.waitForSelector(signUpLocators.pageLogo);
-      await expect(page).toHaveTitle('STORE');
+      await expect.soft(page).toHaveTitle('STORE') // soft assert
       console.log('Page loaded and title verified');
     } catch (error) {
       console.error('Failed to load the page or match title:', error);
