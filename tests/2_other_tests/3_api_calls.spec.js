@@ -7,16 +7,16 @@ test.beforeEach(async ({ request }) => {
 })
 
 test.describe.serial('API tests', () => {
-    test('[@regression] get list of users', async () => {
+    test('get list of users', { tag: '@regression' }, async () => {
         await apiHelper.getListOfUsers()
     })
 
-    test('[@regression] create a user with fake name and job', async () => {
+    test('create a user with fake name and job', { tag: '@regression' }, async () => {
         createdUserId = await apiHelper.createUser()
         console.log("Created user id: ", createdUserId)
     })
     
-    test('[@regression] delete the created user', async () => {
+    test('delete the created user', { tag: '@regression' }, async () => {
         await apiHelper.deleteCreatedUser(createdUserId)
     })
 })

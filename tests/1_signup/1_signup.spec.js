@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Sign up', () => {
-    test('[@smoke] Sign up and login with that user [no-setup]', async ({ page }) => {
+    test('Sign up and login with that user [no-setup]', { tag: ['@smoke', '@regression'] }, async ({ page }) => {
         const signupPage = new SignUp(page)
         const loginPage = new Login(page)
         await signupPage.signUpWithFakeUserData('data/signupinfo.json')
