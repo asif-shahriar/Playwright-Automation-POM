@@ -7,7 +7,7 @@ test.beforeEach(async ({ request }) => {
 })
 
 test.describe.serial('API tests', () => {
-    test('get list of users', { tag: '@regression' }, async () => {
+    test('get list of users', { tag: ['@smoke', '@regression'] }, async () => {
         await apiHelper.getListOfUsers()
     })
 

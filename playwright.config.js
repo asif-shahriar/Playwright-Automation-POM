@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry on CI only */
   // retries: process.env.CI ? 2 : 0,
   /* Retry on Terminal */
-  retries: 2,
+  retries: 1,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -29,9 +29,9 @@ export default defineConfig({
   reporter: [["html"], ["allure-playwright"]],
   /* 10 seconds for expect conditions like toBeVisible() */
   expect: {
-    timeout: 10000, 
+    timeout: 10000,
   },
-  
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -39,10 +39,15 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // trace: 'on-first-retry',
-    /* Always collect the trace to view in html report */ 
+    /* Always collect the trace to view in html report */
     trace: 'on',
     actionTimeout: 20000, // 20 seconds timeout for each action (e.g., page.click)
     navigationTimeout: 20000, // 20 seconds timeout for page.goto or navigation waits
+    screenshot: 'only-on-failure', // Captures screenshot on the moment a test fails
+    video: {
+      mode: 'retain-on-failure',  // Record video for each test, but remove all videos from successful test runs.
+      size: { width: 1280, height: 720 } 
+    }
   },
 
   /* Configure projects for major browsers */
@@ -52,15 +57,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
 
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
 
     /* Test against mobile viewports. */
     // {
