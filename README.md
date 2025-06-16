@@ -1,0 +1,108 @@
+# Playwright Web/API Automation
+A robust end-to-end testing framework built using [Playwright](https://playwright.dev) with a Page Object Model (POM) structure, API testing integration, Allure reporting, and GitHub Actions CI.
+
+---
+
+## Features
+
+- ✅ Page Object Model (POM) design pattern
+- 📲 UI + API testing in a unified repo
+- 🧪 Built-in fake data generation using `@faker-js/faker`
+- 📊 Beautiful Allure and HTML reports
+- ☁️ GitHub Actions for CI integration
+- 🧠 Global setup logic using test metadata/tag conditions
+- 🎥 Video + trace recording on test failures
+
+---
+## Project Structure
+```
+Playwright-Automation-POM/
+│
+├── tests/                       # All test specs go here
+│   └── sample.spec.js
+│
+├── pages/                       # Page Object Model classes
+│   └── sample_page.js
+│
+├── utilities/                   # Utility/helper functions
+│   └── utils.js
+│
+├── data/                        # All generated/test data is stored in this folder
+│   └── data.json
+│
+├── global_setup/                # This folder contains global beforehook codes
+│   └── setup.js
+|
+├── locators/                    # All element locators are stored in this folder page by page
+│   └── locators.js
+|
+|── .github/workflows            # This folder contains the Github Action workflow file
+│   └── job.yml
+|
+├── playwright.config.js         # Main Playwright configuration
+├── package.json                 # Node.js dependencies and scripts
+└── README.md                    # Project documentation
+
+
+```
+## Prerequisites
+- Node.js (18+ recommended)
+- Configure **NODE_HOME**
+---
+## How to run this project
+* Clone the repo
+* Open cmd in the root folder
+* Give following commands sequentially:
+#### Install dependencies 
+```
+npm install
+```
+#### Run the project in headed mode
+```
+npx playwright test --workers=1 --headed
+```
+#### Run the project in headless mode
+```
+npx playwright test --workers=1
+```
+#### Run the project in debug mode
+```
+npx playwright test --workers=1 --debug
+```
+#### Run combination of tagged test cases
+```
+npx playwright test --workers=1 --grep '@smoke' --headed                    # This will run the tests with tag @smoke
+npx playwright test --workers=1 --grep "@smoke|@regression" --headed        # This will run the tests with tag @smoke OR @regression
+npx playwright test --workers=1 --grep "@smoke.*@regression" --headed       # This will run the tests with tag @smoke AND @regression
+```
+---
+## GitHub Actions (CI/CD)
+Tests run automatically on (using ```.github/workflows/playwright.yml```):
+- Push to main or master
+- Pull requests targeting main or master
+```
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+```
+---
+## Reporting
+#### View HTML report
+```
+npx playwright show-report
+```
+#### Screenshot of HTML report
+![2025-06-16_15-26-42](https://github.com/user-attachments/assets/68712d23-5604-4f28-957c-f49123802879)
+#### View Allure report
+```
+allure generate ./allure-results --clean -o ./allure-report
+```
+```
+allure open ./allure-report
+```
+#### Screenshot of Allure report
+![2025-06-16_16-19-19](https://github.com/user-attachments/assets/cf18c138-875b-4c47-9d40-9b12a5fd018a)
+
