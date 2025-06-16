@@ -16,10 +16,4 @@ test.describe('Sign up', () => {
         await signupPage.signUpWithFakeUserData('data/signupinfo.json')
         await loginPage.loginFromJson('data/signupinfo.json', 'username', 'password')
     })
-
-    /* 
-    * npx playwright test --grep "@smoke.*@regression"
-    * npx playwright test --grep "@smoke|@regression"
-    * npx playwright test --grep "@smoke"
-    */
 })

@@ -23,23 +23,19 @@ export class Login {
     // Load saved username and password from userinfo.json 
     // const { username: userid, password: pw } = readJson('data/signupinfo.json', 'username', 'password')
     const data = readJson(filePath)
-    const userid = data[usernameKey]
-    const pw = data[passwordKey]
-
-    // console.log(`extracted username: '${userid}' and password: '${pw}'`)
 
     await this.page.waitForSelector(loginLocators.btnLogin)
     await this.page.click(loginLocators.btnLogin)
     await expect(this.page.locator(loginLocators.loginModalTitle)).toBeVisible();
 
-    await this.page.fill(loginLocators.username, userid)
-    await this.page.fill(loginLocators.password, pw)
+    await this.page.fill(loginLocators.username, data[usernameKey])
+    await this.page.fill(loginLocators.password, data[passwordKey])
 
     await this.page.click(loginLocators.btnSubmitLogin)
 
     // Assert that login was successful
-    await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${userid}`)
-    console.log(`Login successful with username: '${userid}'`)
+    await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${data[usernameKey]}`)
+    console.log(`Login successful with username: '${data[usernameKey]}'`)
 
   }
 
