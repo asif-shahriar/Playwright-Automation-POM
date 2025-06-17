@@ -28,8 +28,8 @@ export class Login {
     await this.page.click(loginLocators.btnLogin)
     await expect(this.page.locator(loginLocators.loginModalTitle)).toBeVisible();
 
-    await this.page.fill(loginLocators.username, data[usernameKey])
-    await this.page.fill(loginLocators.password, data[passwordKey])
+    await this.page.locator(loginLocators.username).fill(data[usernameKey]);
+    await this.page.locator(loginLocators.password).fill(data[passwordKey]);
 
     await this.page.click(loginLocators.btnSubmitLogin)
 
