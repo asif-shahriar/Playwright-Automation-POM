@@ -57,24 +57,16 @@ Playwright-Automation-POM/
 ```
 npm install
 ```
-#### Run the project in headed mode
-```
-npx playwright test --workers=1 --headed
-```
-#### Run the project in headless mode
-```
-npx playwright test --workers=1
-```
-#### Run the project in debug mode
-```
-npx playwright test --workers=1 --debug
-```
-#### Run combination of tagged test cases
-```
-npx playwright test --workers=1 --grep '@smoke' --headed                    # This will run the tests with tag @smoke
-npx playwright test --workers=1 --grep "@smoke|@regression" --headed        # This will run the tests with tag @smoke OR @regression
-npx playwright test --workers=1 --grep "@smoke.*@regression" --headed       # This will run the tests with tag @smoke AND @regression
-```
+#### Test Execution Commands
+
+| Purpose                                | Command                                                                 |
+|----------------------------------------|-------------------------------------------------------------------------|
+| Run the project in **headed mode**     | ```npx playwright test --workers=1 --headed```                              |
+| Run the project in **headless mode**   | `npx playwright test --workers=1`                                       |
+| Run the project in **debug mode**      | `npx playwright test --workers=1 --debug`                               |
+| Run tests with **@smoke** tag          | `npx playwright test --workers=1 --grep '@smoke' --headed`             |
+| Run tests with **@smoke OR @regression** tags | `npx playwright test --workers=1 --grep "@smoke\|@regression" --headed` |
+| Run tests with **@smoke AND @regression** tags | `npx playwright test --workers=1 --grep "@smoke.*@regression" --headed` |
 ---
 ## GitHub Actions (CI/CD)
 Tests run automatically on (using ```.github/workflows/playwright.yml```):
