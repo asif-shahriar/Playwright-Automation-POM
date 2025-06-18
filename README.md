@@ -67,8 +67,9 @@ npm install
 | Run tests with **@smoke** tag          | `npx playwright test --workers=1 --grep '@smoke' --headed`             |
 | Run tests with **@smoke OR @regression** tags | `npx playwright test --workers=1 --grep "@smoke\|@regression" --headed` |
 | Run tests with **@smoke AND @regression** tags | `npx playwright test --workers=1 --grep "@smoke.*@regression" --headed` |
+| Run tests with **Generative AI** | `npx playwright codegen` |
 ---
-## GitHub Actions (CI/CD)
+## GitHub Actions (CI)
 Tests run automatically on (using ```.github/workflows/playwright.yml```):
 - Push to main or master
 - Pull requests targeting main or master
