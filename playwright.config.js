@@ -46,7 +46,7 @@ export default defineConfig({
     screenshot: 'only-on-failure', // Captures screenshot on the moment a test fails
     video: {
       mode: 'retain-on-failure',  // Record video for each test, but remove all videos from successful test runs.
-      size: { width: 1280, height: 720 } 
+      size: { width: 1280, height: 720 }
     }
   },
 
@@ -54,7 +54,14 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        /* 
+          It is important to define the `viewport` property after destructuring `devices`,
+          since devices also define the `viewport` for that device. 
+         */
+        viewport: { width: 1280, height: 720 },
+      },
     },
 
     {
@@ -64,7 +71,9 @@ export default defineConfig({
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+      },
     },
 
     /* Test against mobile viewports. */

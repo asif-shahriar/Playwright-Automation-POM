@@ -15,12 +15,7 @@ export class Login {
   }
 
   async loginFromJson(filePath, usernameKey, passwordKey) {
-    /* 
-      Load saved username and password from the given filepath   
-      and storing it in two new variables by mapping them with the json keys passed as the method parameter(s) 
-    */
-
-    // Load saved username and password from userinfo.json 
+    // Load saved username and password from given filepath
     // const { username: userid, password: pw } = readJson('data/signupinfo.json', 'username', 'password')
     const data = readJson(filePath)
 
