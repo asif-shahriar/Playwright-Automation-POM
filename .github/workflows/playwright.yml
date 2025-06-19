@@ -47,10 +47,10 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
         subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }}
-        to: ackerman@yopmail.com
+        to: ademoblaze_playwright@maildrop.cc  # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright to see the email
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
         body: |
-          Hello Team,<br><br>
+          Hello,<br><br>
           ✅ The Playwright smoke test run has finished.<br>
           📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">Click here to download the test report</a><br><br>
           🕒 Triggered by: ${{ github.actor }}<br>
