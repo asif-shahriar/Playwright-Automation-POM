@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch: 
 
 jobs:
   test:
@@ -12,9 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
 
@@ -24,14 +27,18 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Run Smoke tests
+    - name: Run Playwright smoke tests
       run: npx playwright test --workers=1 --grep '@smoke'
 
-    - name: Zip the report
+    - name: Upload Playwright HTML report
       if: ${{ always() }}
-      run: zip -r playwright-report.zip playwright-report/
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
 
-    - name: Send email with HTML report attached
+    - name: Send email with report link
       if: ${{ always() }}
       uses: dawidd6/action-send-mail@v3
       with:
@@ -39,13 +46,16 @@ jobs:
         server_port: 587
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
-        subject: 📊 Playwright Test Report - ${{ github.workflow }}
+        subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }}
         to: ackerman@yopmail.com
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
         body: |
-          Hello,<br><br>
-          ✅ Smoke tests have completed.<br>
-          📎 Please find the attached Playwright HTML report (ZIPPED).<br><br>
+          Hello Team,<br><br>
+          ✅ The Playwright smoke test run has finished.<br>
+          📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">Click here to download the test report</a><br><br>
+          🕒 Triggered by: ${{ github.actor }}<br>
+          📁 Branch: ${{ github.ref_name }}<br>
+          📌 Status: ${{ job.status }}<br><br>
           Regards,<br>
-          Automation CI
-        attachments: playwright-report.zip
+          CI Pipeline<br>
+          Enjoy!
