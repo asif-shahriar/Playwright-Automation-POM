@@ -1,27 +1,51 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
+
+    - name: Run Smoke tests
       run: npx playwright test --workers=1 --grep '@smoke'
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+
+    - name: Zip the report
+      if: ${{ always() }}
+      run: zip -r playwright-report.zip playwright-report/
+
+    - name: Send email with HTML report attached
+      if: ${{ always() }}
+      uses: dawidd6/action-send-mail@v3
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASS }}
+        subject: 📊 Playwright Test Report - ${{ github.workflow }}
+        to: ackerman@yopmail.com
+        from: Playwright CI <${{ secrets.EMAIL_USER }}>
+        body: |
+          Hello,<br><br>
+          ✅ Smoke tests have completed.<br>
+          📎 Please find the attached Playwright HTML report (ZIPPED).<br><br>
+          Regards,<br>
+          Automation CI
+        attachments: playwright-report.zip
