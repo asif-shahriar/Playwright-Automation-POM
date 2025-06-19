@@ -26,7 +26,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: 'html',
-  reporter: [["html"], ["allure-playwright"]],
+  reporter: [
+  ['html'],
+  ['allure-playwright'],
+  ['json', { outputFile: 'playwright-report/test-results.json' }],
+],
   /* 10 seconds for expect conditions like toBeVisible() */
   expect: {
     timeout: 10000,
