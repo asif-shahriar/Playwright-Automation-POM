@@ -1,4 +1,4 @@
-name: Playwright Smoke Tests
+name: Playwright Tests
 
 on:
   push:
@@ -57,12 +57,26 @@ jobs:
         echo "FAILED=$FAILED" >> $GITHUB_ENV
         echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
 
-    - name: Upload Playwright HTML report
+    - name: Create timestamp and zip report
+      run: |
+        # Timestamp for zip filename: underscores, no spaces
+        ZIP_TIMESTAMP=$(date +"%Y-%m-%d_%I-%M_%p")
+        ZIP_NAME="playwright-report-$ZIP_TIMESTAMP.zip"
+        echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+
+        # Timestamp for email subject: spaces and colon
+        EMAIL_TIMESTAMP=$(date +"%Y-%m-%d %I:%M %p")
+        echo "EMAIL_TIMESTAMP=$EMAIL_TIMESTAMP" >> $GITHUB_ENV
+
+        # Zip the report folder
+        zip -r "$ZIP_NAME" playwright-report
+
+    - name: Upload Playwright HTML report zip
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
         name: playwright-report
-        path: playwright-report/
+        path: ${{ env.ZIP_NAME }}
         retention-days: 30
 
     - name: Send email with report link and details
@@ -73,16 +87,13 @@ jobs:
         server_port: 587
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
-        subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }}
-        to: demoblaze_playwright@maildrop.cc   # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright
+        subject: 🧪 Playwright Smoke Test Report - ${{ env.EMAIL_TIMESTAMP }}
+        to: demoblaze_playwright@maildrop.cc    # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
         html_body: |
           Hello,<br><br>
 
           ✅ <b>Playwright smoke test run completed</b><br><br>
-
-          🔧 <b>Command Executed:</b><br>
-          <code>npx playwright test --workers=1 --grep '@smoke'</code><br><br>
 
           📋 <b>Test Summary:</b><br>
           🟢 Passed: <b>${{ env.PASSED }}</b><br>
@@ -96,6 +107,8 @@ jobs:
 
           📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
           Click here to view or download the full test report</a><br><br>
+
+          📁 Attached report zip: <b>${{ env.ZIP_NAME }}</b><br><br>
 
           Regards,<br>
           CI Pipeline
