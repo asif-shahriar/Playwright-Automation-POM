@@ -32,21 +32,24 @@ jobs:
       run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
 
     - name: Run Playwright smoke tests
-      run: npx playwright test --workers=1 --grep '@smoke' --reporter=json,html
+      run: |
+        npx playwright test --workers=1 --grep '@smoke' --reporter=json,html --output=playwright-report
+        # Output folder now contains JSON and HTML report
 
     - name: Record test duration and parse summary
       id: summary
       run: |
         END_TIME=$(date +%s)
         echo "END_TIME=$END_TIME" >> $GITHUB_ENV
-        DURATION=$((END_TIME - $START_TIME))
+        DURATION=$((END_TIME - START_TIME))
         echo "DURATION=$DURATION seconds" >> $GITHUB_ENV
 
         RESULTS_FILE="playwright-report/test-results.json"
+
         if [ -f "$RESULTS_FILE" ]; then
-          PASSED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="passed")] | length' "$RESULTS_FILE")
-          FAILED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="failed")] | length' "$RESULTS_FILE")
-          SKIPPED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="skipped")] | length' "$RESULTS_FILE")
+          PASSED=$(jq '[.suites[].specs[].tests[] | select(.results[].status=="passed")] | length' "$RESULTS_FILE")
+          FAILED=$(jq '[.suites[].specs[].tests[] | select(.results[].status=="failed")] | length' "$RESULTS_FILE")
+          SKIPPED=$(jq '[.suites[].specs[].tests[] | select(.results[].status=="skipped")] | length' "$RESULTS_FILE")
         else
           PASSED=0
           FAILED=0
@@ -59,16 +62,14 @@ jobs:
 
     - name: Create timestamp and zip report
       run: |
-        # Timestamp for zip filename: underscores, no spaces
-        ZIP_TIMESTAMP=$(date +"%Y-%m-%d_%I-%M_%p")
+        # Use Asia/Dhaka timezone (change as needed)
+        ZIP_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d_%I-%M_%p")
+        EMAIL_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d %I:%M %p")
+
         ZIP_NAME="playwright-report-$ZIP_TIMESTAMP.zip"
         echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-
-        # Timestamp for email subject: spaces and colon
-        EMAIL_TIMESTAMP=$(date +"%Y-%m-%d %I:%M %p")
         echo "EMAIL_TIMESTAMP=$EMAIL_TIMESTAMP" >> $GITHUB_ENV
 
-        # Zip the report folder
         zip -r "$ZIP_NAME" playwright-report
 
     - name: Upload Playwright HTML report zip
@@ -87,8 +88,8 @@ jobs:
         server_port: 587
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
-        subject: 🧪 Playwright Smoke Test Report - ${{ env.EMAIL_TIMESTAMP }}
-        to: demoblaze_playwright@maildrop.cc    # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright
+        subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }} - ${{ env.EMAIL_TIMESTAMP }}
+        to: demoblaze_playwright@maildrop.cc  # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
         html_body: |
           Hello,<br><br>
