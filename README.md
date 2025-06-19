@@ -73,6 +73,7 @@ npm install
 Tests run automatically on (using ```.github/workflows/playwright.yml```):
 - Push to main or master
 - Pull requests targeting main or master
+- Sends email with the report link published to github: [Click here to view the email after triggering the job](https://maildrop.cc/inbox/?mailbox=demoblaze_playwright)
 ```
 name: Playwright Tests
 on:

@@ -47,7 +47,7 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
         subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }}
-        to: ademoblaze_playwright@maildrop.cc  # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright to see the email
+        to: demoblaze_playwright@maildrop.cc  # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright to see the email
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
         body: |
           Hello,<br><br>
