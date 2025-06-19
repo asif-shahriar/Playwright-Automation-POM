@@ -89,7 +89,7 @@ on:
 npx playwright show-report
 ```
 #### Screenshot of HTML report
-![2025-06-16_15-26-42](https://github.com/user-attachments/assets/68712d23-5604-4f28-957c-f49123802879)
+![2025-06-16_15-26-42](README_assets/html-report.jpg)
 #### View Allure report
 ```
 allure generate ./allure-results --clean -o ./allure-report
@@ -98,5 +98,5 @@ allure generate ./allure-results --clean -o ./allure-report
 allure open ./allure-report
 ```
 #### Screenshot of Allure report
-![2025-06-16_16-19-19](https://github.com/user-attachments/assets/cf18c138-875b-4c47-9d40-9b12a5fd018a)
+![2025-06-16_16-19-19](README_assets/allure-report.jpg)
 
