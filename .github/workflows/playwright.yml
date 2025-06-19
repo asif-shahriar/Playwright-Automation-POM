@@ -1,11 +1,11 @@
-name: Playwright Tests
+name: Playwright Smoke Tests
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   test:
@@ -27,8 +27,35 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
+    - name: Record test start time
+      id: start_time
+      run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
     - name: Run Playwright smoke tests
-      run: npx playwright test --workers=1 --grep '@smoke'
+      run: npx playwright test --workers=1 --grep '@smoke' --reporter=json,html
+
+    - name: Record test duration and parse summary
+      id: summary
+      run: |
+        END_TIME=$(date +%s)
+        echo "END_TIME=$END_TIME" >> $GITHUB_ENV
+        DURATION=$((END_TIME - $START_TIME))
+        echo "DURATION=$DURATION seconds" >> $GITHUB_ENV
+
+        RESULTS_FILE="playwright-report/test-results.json"
+        if [ -f "$RESULTS_FILE" ]; then
+          PASSED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="passed")] | length' "$RESULTS_FILE")
+          FAILED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="failed")] | length' "$RESULTS_FILE")
+          SKIPPED=$(jq '[.suites[]?.specs[]?.tests[] | select(.results[]?.status=="skipped")] | length' "$RESULTS_FILE")
+        else
+          PASSED=0
+          FAILED=0
+          SKIPPED=0
+        fi
+
+        echo "PASSED=$PASSED" >> $GITHUB_ENV
+        echo "FAILED=$FAILED" >> $GITHUB_ENV
+        echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
 
     - name: Upload Playwright HTML report
       if: ${{ always() }}
@@ -38,7 +65,7 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-    - name: Send email with report link
+    - name: Send email with report link and details
       if: ${{ always() }}
       uses: dawidd6/action-send-mail@v3
       with:
@@ -47,15 +74,28 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
         subject: 🧪 Playwright Smoke Test Report - ${{ github.workflow }}
-        to: demoblaze_playwright@mailinator.com  # Visit https://www.mailinator.com/v4/public/inboxes.jsp?to=demoblaze_playwright to see the email
+        to: demoblaze_playwright@maildrop.cc   # Visit https://maildrop.cc/inbox/?mailbox=demoblaze_playwright
         from: Playwright CI <${{ secrets.EMAIL_USER }}>
-        body: |
+        html_body: |
           Hello,<br><br>
-          ✅ The Playwright smoke test run has finished.<br>
-          📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">Click here to download the test report</a><br><br>
-          🕒 Triggered by: ${{ github.actor }}<br>
-          📁 Branch: ${{ github.ref_name }}<br>
-          📌 Status: ${{ job.status }}<br><br>
+
+          ✅ <b>Playwright smoke test run completed</b><br><br>
+
+          🔧 <b>Command Executed:</b><br>
+          <code>npx playwright test --workers=1 --grep '@smoke'</code><br><br>
+
+          📋 <b>Test Summary:</b><br>
+          🟢 Passed: <b>${{ env.PASSED }}</b><br>
+          🔴 Failed: <b>${{ env.FAILED }}</b><br>
+          ⚪ Skipped: <b>${{ env.SKIPPED }}</b><br>
+          ⏱ Duration: <b>${{ env.DURATION }}</b><br><br>
+
+          👤 Triggered by: <b>${{ github.actor }}</b><br>
+          🌿 Branch: <b>${{ github.head_ref || github.ref_name }}</b><br>
+          📌 Status: <b>${{ job.status }}</b><br><br>
+
+          📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+          Click here to view or download the full test report</a><br><br>
+
           Regards,<br>
-          CI Pipeline<br>
-          Enjoy!
+          CI Pipeline
