@@ -9,8 +9,7 @@
     "report:allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
     "report:allure:open": "allure open ./allure-report",
     "test:with-html": "npm run test && npm run report:html:generate",
-    "test:with-allure": "npm run test && npm run report:allure:generate && npm run report:allure:open",
-    "test:with-reports": "npm run clean:reports && npm run test && npm run report:html && npm run report:allure"
+    "test:with-allure": "npm run test && npm run report:allure:generate && npm run report:allure:open"
   },
   "keywords": [],
   "author": "",
