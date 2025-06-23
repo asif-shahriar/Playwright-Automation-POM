@@ -84,18 +84,15 @@ on:
 ```
 ---
 ## Reporting
-#### View HTML report
+#### Run test and view HTML report
 ```
-npx playwright show-report
+npm run test:with-html
 ```
 #### Screenshot of HTML report
 ![2025-06-16_15-26-42](README_assets/html-report.jpg)
-#### View Allure report
+#### Run test and view Allure report
 ```
-allure generate ./allure-results --clean -o ./allure-report
-```
-```
-allure open ./allure-report
+npm run test:with-allure
 ```
 #### Screenshot of Allure report
 ![2025-06-16_16-19-19](README_assets/allure-report.jpg)
