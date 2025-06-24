@@ -29,7 +29,7 @@ export class Login {
     await this.page.click(loginLocators.btnSubmitLogin);
 
     // Assert that login was successful
-    await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Welcome ${data[usernameKey]}`);
+    await expect(this.page.locator(loginLocators.nameOfLoggedInUser)).toContainText(`Hola ${data[usernameKey]}`);
     console.log(`Login successful with username: '${data[usernameKey]}'`);
   }
 
