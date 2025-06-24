@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                        // Modern JS features, good Node support
+    "module": "CommonJS",                      // Node.js compatibility
+    "moduleResolution": "Node",
+    "strict": true,                            // Enable all strict type-checking options
+    "esModuleInterop": true,                   // Allow default imports from CommonJS
+    "skipLibCheck": true,                      // Speed up builds, skip type checking of .d.ts files
+    "forceConsistentCasingInFileNames": true,  // Prevent case-related bugs
+    "outDir": "dist",                          // Output directory for compiled JS
+    "rootDir": ".",                            // Root directory of your source files
+    "resolveJsonModule": true,                 // Allow importing JSON files
+    "types": ["node", "@playwright/test"],     // Include Node.js and Playwright types
+    "allowJs": true,                           // Allow JS files in the project (for gradual migration)
+    "checkJs": false,                          // Don't type-check JS files (set to true if you want to check JS too)
+    "noEmit": true                             // Don't emit JS files, useful if you only use ts-node or Playwright's built-in runner
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

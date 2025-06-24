@@ -19,27 +19,28 @@ A robust end-to-end testing framework built using [Playwright](https://playwrigh
 Playwright-Automation-POM/
 │
 ├── tests/                       # All test specs go here
-│   └── sample.spec.js
+│   └── sample.spec.ts
 │
 ├── pages/                       # Page Object Model classes
-│   └── sample_page.js
+│   └── sample_page.ts
 │
 ├── utilities/                   # Utility/helper functions
-│   └── utils.js
+│   └── utils.ts
 │
 ├── data/                        # All generated/test data is stored in this folder
 │   └── data.json
 │
 ├── global_setup/                # This folder contains global beforehook codes
-│   └── setup.js
+│   └── setup.ts
 |
 ├── locators/                    # All element locators are stored in this folder page by page
-│   └── locators.js
+│   └── locators.ts
 |
 |── .github/workflows            # This folder contains the Github Action workflow file
 │   └── job.yml
 |
-├── playwright.config.js         # Main Playwright configuration
+├── playwright.config.ts         # Main Playwright configuration
+├── tsconfig.json                # Typescript compiler config file
 ├── package.json                 # Node.js dependencies and scripts
 └── README.md                    # Project documentation
 
