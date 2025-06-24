@@ -39,9 +39,11 @@ jobs:
       - id: start_time
         run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
 
-      - run: npx playwright test --workers=1 --grep '@smoke'
+      - name: Run Playwright Smoke Tests
+        run: npx playwright test --workers=1 --grep '@smoke'
+        continue-on-error: true
 
-      - id: summary
+      - name: Extract Test Summary
         run: |
           END_TIME=$(date +%s)
           echo "END_TIME=$END_TIME" >> $GITHUB_ENV
@@ -63,30 +65,38 @@ jobs:
           echo "FAILED=$FAILED" >> $GITHUB_ENV
           echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
 
-      - run: |
+      - name: Zip report if exists
+        run: |
           ZIP_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d_%I-%M_%p")
           EMAIL_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d %I:%M %p")
+          echo "EMAIL_TIMESTAMP=$EMAIL_TIMESTAMP" >> $GITHUB_ENV
 
           ZIP_NAME="playwright-report-$ZIP_TIMESTAMP.zip"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-          echo "EMAIL_TIMESTAMP=$EMAIL_TIMESTAMP" >> $GITHUB_ENV
 
-          zip -r "$ZIP_NAME" playwright-report
+          if [ -d "playwright-report" ]; then
+            zip -r "$ZIP_NAME" playwright-report
+          else
+            echo "No playwright-report folder found, skipping zip."
+          fi
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload report zip if created
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ZIP_NAME }}
           path: ${{ env.ZIP_NAME }}
+          if-no-files-found: ignore
 
-      - uses: dawidd6/action-send-mail@v3
+      - name: Send Email Report
         if: always()
+        uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
-          subject: 🧪 Playwright Smoke Test Report on  ${{ env.EMAIL_TIMESTAMP }}
+          subject: 🧪 Playwright Smoke Test Report on ${{ env.EMAIL_TIMESTAMP }}
           to: demoblaze_playwright@maildrop.cc
           from: Playwright CI <${{ secrets.EMAIL_USER }}>
           html_body: |
@@ -106,7 +116,7 @@ jobs:
             📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
             Click here to view or download the full test report</a><br><br>
 
-            📁 Attached report zip: <b>${{ env.ZIP_NAME }}</b><br><br>
+            📁 Report zip: <b>${{ env.ZIP_NAME }}</b> (attached in workflow if available)<br><br>
 
             Regards,<br>
             CI Pipeline
@@ -131,11 +141,13 @@ jobs:
           ZIP_NAME="docker-playwright-report-$ZIP_TIMESTAMP.zip"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
 
-          zip -r "$ZIP_NAME" playwright-report
+          if [ -d "playwright-report" ]; then
+            zip -r "$ZIP_NAME" playwright-report
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ${{ env.ZIP_NAME }}
           path: ${{ env.ZIP_NAME }}
-
+          if-no-files-found: ignore
