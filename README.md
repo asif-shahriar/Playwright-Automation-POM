@@ -75,13 +75,18 @@ Tests run automatically on (using ```.github/workflows/playwright.yml```):
 - Push to main or master
 - Pull requests targeting main or master
 - Sends email with the report link published to github: [Click here to view the email after triggering the job](https://maildrop.cc/inbox/?mailbox=demoblaze_playwright)
+- Runs a scheduled job using Microsoft's official Playwright docker image
 ```
 name: Playwright Tests
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+  workflow_dispatch:
+  schedule:
+    - cron: '1 18 * * 3'  # Every Wednesday 12:01 AM Dhaka time
 ```
 ---
 ## Reporting
