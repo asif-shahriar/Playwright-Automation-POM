@@ -7,58 +7,34 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    - cron: '1 18 * * 3'  # Every Wednesday at 6:01 PM UTC = 12:01 AM Wednesday Dhaka time
+    - cron: '1 18 * * 3'  # Every Wednesday 12:01 AM Dhaka time
 
 env:
   TZ: Asia/Dhaka
 
 jobs:
-  test:
+  test-local:
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
     timeout-minutes: 60
 
-    strategy:
-      matrix:
-        mode: [local, docker]
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Setup Node and dependencies only for local mode on push, PR, manual
-      - name: Setup Node.js
-        if: matrix.mode == 'local' && github.event_name != 'schedule'
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: Install dependencies
-        if: matrix.mode == 'local' && github.event_name != 'schedule'
-        run: npm ci
+      - run: npm ci
 
-      - name: Install Playwright Browsers
-        if: matrix.mode == 'local' && github.event_name != 'schedule'
-        run: npx playwright install --with-deps
+      - run: npx playwright install --with-deps
 
-      - name: Record test start time
-        id: start_time
+      - id: start_time
         run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Run tests (local)
-        if: matrix.mode == 'local' && github.event_name != 'schedule'
-        run: npx playwright test --workers=1 --grep '@smoke'
+      - run: npx playwright test --workers=1 --grep '@smoke'
 
-      - name: Run tests in Docker (scheduled)
-        if: matrix.mode == 'docker' && github.event_name == 'schedule'
-        run: |
-          docker build -t my-playwright-tests .
-          docker run --rm \
-            -e "PLAYWRIGHT_ARGS=--workers=1 --grep='@smoke'" \
-            -v ${{ github.workspace }}:/app \
-            my-playwright-tests
-
-      - name: Record test duration and parse summary
-        id: summary
+      - id: summary
         run: |
           END_TIME=$(date +%s)
           echo "END_TIME=$END_TIME" >> $GITHUB_ENV
@@ -80,8 +56,7 @@ jobs:
           echo "FAILED=$FAILED" >> $GITHUB_ENV
           echo "SKIPPED=$SKIPPED" >> $GITHUB_ENV
 
-      - name: Create timestamp and zip report
-        run: |
+      - run: |
           ZIP_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d_%I-%M_%p")
           EMAIL_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d %I:%M %p")
 
@@ -91,17 +66,14 @@ jobs:
 
           zip -r "$ZIP_NAME" playwright-report
 
-      - name: Upload Playwright HTML report zip
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ZIP_NAME }}
           path: ${{ env.ZIP_NAME }}
-          retention-days: 30
 
-      - name: Send email with report link and details
-        if: always() && !(matrix.mode == 'docker' && github.event_name == 'schedule')
-        uses: dawidd6/action-send-mail@v3
+      - uses: dawidd6/action-send-mail@v3
+        if: always()
         with:
           server_address: smtp.gmail.com
           server_port: 587
@@ -131,3 +103,32 @@ jobs:
 
             Regards,<br>
             CI Pipeline
+
+  test-docker:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          docker build -t my-playwright-tests .
+          docker run --rm \
+            -e "PLAYWRIGHT_ARGS=--workers=1 --grep='@smoke'" \
+            -v ${{ github.workspace }}:/app \
+            my-playwright-tests
+
+      - run: |
+          ZIP_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d_%I-%M_%p")
+          ZIP_NAME="docker-playwright-report-$ZIP_TIMESTAMP.zip"
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+
+          zip -r "$ZIP_NAME" playwright-report
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: ${{ env.ZIP_NAME }}
+
