@@ -7,7 +7,7 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    - cron: '25 6 * * 4'  # Every Thursday 12:25 PM Dhaka time
+    - cron: '1 18 * * 4'  # Every Friday 12:01 AM Dhaka time
 
 env:
   TZ: Asia/Dhaka
