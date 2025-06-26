@@ -86,7 +86,7 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    - cron: '1 18 * * 3'  # Every Wednesday 12:01 AM Dhaka time
+    - cron: '1 18 * * 4'  # Every Friday 12:01 AM Dhaka time
 ```
 ---
 ## Reporting
