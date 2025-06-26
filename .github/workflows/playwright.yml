@@ -7,7 +7,7 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    - cron: '1 18 * * 3'  # Every Wednesday 12:01 AM Dhaka time
+    - cron: '57 5 * * 4'  # Every Thursday 11:57 AM Dhaka time
 
 env:
   TZ: Asia/Dhaka
@@ -40,8 +40,18 @@ jobs:
         run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
 
       - name: Run Playwright Smoke Tests
-        run: npx playwright test --workers=1 --grep '@smoke'
+        id: run_tests
+        run: |
+          npx playwright test --workers=1 --grep '@smoke'
         continue-on-error: true
+
+      - name: Set TEST_STATUS
+        run: |
+          if [ "${{ steps.run_tests.outcome }}" == "success" ]; then
+            echo "TEST_STATUS=success" >> $GITHUB_ENV
+          else
+            echo "TEST_STATUS=failure" >> $GITHUB_ENV
+          fi
 
       - name: Extract Test Summary
         run: |
@@ -111,7 +121,8 @@ jobs:
 
             👤 Triggered by: <b>${{ github.actor }}</b><br>
             🌿 Branch: <b>${{ github.head_ref || github.ref_name }}</b><br>
-            📌 Status: <b>${{ job.status }}</b><br><br>
+            ✅ Test Status: <b>${{ env.TEST_STATUS }}</b><br>
+            📌 Job Status: <b>${{ job.status }}</b><br><br>
 
             📎 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
             Click here to view or download the full test report</a><br><br>
@@ -134,7 +145,9 @@ jobs:
           docker run --rm \
             -e "PLAYWRIGHT_ARGS=--workers=1 --grep='@smoke'" \
             -v ${{ github.workspace }}:/app \
-            my-playwright-tests
+            my-playwright-tests \
+            sh -c "npm ci && npx playwright test $PLAYWRIGHT_ARGS"
+
 
       - run: |
           ZIP_TIMESTAMP=$(TZ="Asia/Dhaka" date +"%Y-%m-%d_%I-%M_%p")
