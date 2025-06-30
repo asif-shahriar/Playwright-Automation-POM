@@ -13,7 +13,11 @@ export class APIHelper {
   }
 
   async getListOfUsers(): Promise<void> {
-    const response = await this.request.get(this.baseUrl + "/api/users?page=2");
+    const response = await this.request.get(this.baseUrl + "/api/users?page=2", {
+      headers: {
+        "x-api-key": "reqres-free-v1"
+      }
+    });
     console.log("The API GET response is: ", await response.json());
     expect(response.status()).toBe(200);
   }
