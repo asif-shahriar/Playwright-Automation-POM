@@ -4,12 +4,6 @@ import { faker } from '@faker-js/faker';
 
 export class APIHelper {
 
-  /**
-   * Reference "request" from Playwright without actually importing it in the code
-   * Helps with auto-suggestion/auto-completion
-   * Add this JSDoc before class constructor and you're good to go
-   * @param {import('@playwright/test').APIRequestContext} request
-  */
   request: APIRequestContext;
   baseUrl: string;
 
@@ -33,12 +27,19 @@ export class APIHelper {
     });
 
     const jsonData = await response.json(); // Wait for JSON to resolve
+    if (!jsonData.id) {
+      throw new Error('No user ID returned in response');
+    }
     console.log("The create user API response is: ", jsonData);
     expect(response.status()).toBe(201);
     return jsonData.id;
   }
 
   async deleteCreatedUser(id: string | undefined): Promise<void> {
+    if (!id) {
+      throw new Error('User ID is undefined. Cannot delete.');
+    }
+
     const response = await this.request.delete(`${this.baseUrl}/api/users/${id}`, {
       headers: { "x-api-key": "reqres-free-v1" }
     });

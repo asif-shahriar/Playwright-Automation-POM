@@ -141,12 +141,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: |
-          docker build -t my-playwright-tests .
-          docker run --rm \
-            -e "PLAYWRIGHT_ARGS=--workers=1 --grep='@smoke'" \
-            -v ${{ github.workspace }}:/app \
-            my-playwright-tests \
-            sh -c "npm ci && npx playwright test $PLAYWRIGHT_ARGS"
+          - run: |
+              docker build -t my-playwright-tests .
+              docker run --rm \
+                -e "PLAYWRIGHT_ARGS=--workers=1 --grep='@smoke'" \
+                -v ${{ github.workspace }}:/app \
+                my-playwright-tests \
+                sh -c "npm ci && npx playwright test $PLAYWRIGHT_ARGS && npx playwright show-report --no-open"
+
 
 
       - run: |

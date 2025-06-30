@@ -15,12 +15,11 @@ export function readJson<T extends Record<string, any>>(filePath: string, ...key
     const result: Partial<T> = {};
     for (const key of keys) {
       if (key in fileData) {
-        (result as Record<string, any>)[key] = fileData[key];
+        result[key as keyof T] = fileData[key as keyof T];
       } else {
         console.warn(`Key "${key}" not found in ${filePath}`);
       }
     }
-
     return result;
 
   } catch (error: any) {
